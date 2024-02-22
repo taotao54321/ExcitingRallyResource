@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title>エキサイティングラリー (FC) 攻略&#x2F;解析 -RAM</title>
+
+    <link rel="stylesheet" href="https://taotao54321.github.io/ExcitingRallyResource/css/main.css">
+</head>
+<body><header><a href="https://taotao54321.github.io/ExcitingRallyResource/">エキサイティングラリー (FC) 攻略&#x2F;解析</a>
+            
+            </header>
+
+    <h1>RAM</h1>
+
+    <h2 id="map">メモリマップ</h2>
+<table><thead><tr><th>アドレス</th><th>型</th><th>内容</th></tr></thead><tbody>
+<tr><td><code>$00-$1F</code></td><td></td><td>雑用</td></tr>
+<tr><td><code>$20</code></td><td></td><td></td></tr>
+<tr><td><code>$21</code></td><td><code>u8</code></td><td><code>PPU_CTRL</code> (<code>$2000</code>) 管理用</td></tr>
+<tr><td><code>$22</code></td><td><code>u8</code></td><td><code>PPU_MASK</code> (<code>$2001</code>) 管理用</td></tr>
+<tr><td><code>$23</code></td><td><code>u8</code></td><td><code>PPU_SCROLL</code> (<code>$2005</code>) x 管理用</td></tr>
+<tr><td><code>$24</code></td><td><code>u8</code></td><td><code>PPU_SCROLL</code> (<code>$2005</code>) y 管理用</td></tr>
+<tr><td><code>$25</code></td><td><code>ptr</code></td><td></td></tr>
+<tr><td><code>$27</code></td><td><code>ptr</code></td><td>PRG 6 内のパレットテーブル <code>$BC3E</code> へのポインタ (不変)</td></tr>
+<tr><td><code>$29</code></td><td></td><td></td></tr>
+<tr><td><code>$2A</code></td><td></td><td>雑用</td></tr>
+<tr><td><code>$2B</code></td><td></td><td>(実質未使用)</td></tr>
+<tr><td><code>$2C</code></td><td><code>u8</code></td><td></td></tr>
+<tr><td><code>$2D</code></td><td></td><td>(未使用)</td></tr>
+<tr><td><code>$2E</code></td><td><code>u8</code></td><td></td></tr>
+<tr><td><code>$2F</code></td><td><code>u8</code></td><td>MMC1: 制御レジスタ (<code>$9FFF</code>) 管理用</td></tr>
+<tr><td><code>$30</code></td><td><code>u8</code></td><td>MMC1: PPU <code>$1000-$1FFF</code> の CHR バンクID管理用</td></tr>
+<tr><td><code>$31</code></td><td><code>u8</code></td><td>MMC1: PPU <code>$0000-$0FFF</code> の CHR バンクID管理用</td></tr>
+<tr><td><code>$32</code></td><td><code>u8</code></td><td>MMC1: CPU <code>$8000-$BFFF</code> の PRG バンクID管理用</td></tr>
+<tr><td><code>$33</code></td><td><code>u8</code></td><td></td></tr>
+<tr><td><code>$34</code></td><td><code>u8</code></td><td>1P 生入力 (ABSTUDLR)</td></tr>
+<tr><td><code>$35</code></td><td><code>u8</code></td><td>1P エッジ入力 (ABSTUDLR)</td></tr>
+<tr><td><code>$36</code></td><td><code>u8</code></td><td>2P 生入力 (ABSTUDLR)</td></tr>
+<tr><td><code>$37</code></td><td><code>u8</code></td><td>2P エッジ入力 (ABSTUDLR)</td></tr>
+<tr><td><code>$38</code></td><td><code>u8</code></td><td>フレームカウンタ (NMI 待ちを行うたびにインクリメントされる)</td></tr>
+<tr><td><code>$39-$3A</code></td><td></td><td>(未使用)</td></tr>
+<tr><td><code>$3B</code></td><td><code>u8</code></td><td></td></tr>
+<tr><td><code>$3C</code></td><td><code>u16le</code></td><td></td></tr>
+<tr><td><code>$3E</code></td><td><code>ptr</code></td><td></td></tr>
+<tr><td><code>$40-$47</code></td><td><code>ptr[4]</code></td><td></td></tr>
+<tr><td><code>$48</code></td><td><code>u8</code></td><td></td></tr>
+<tr><td><code>$49</code></td><td><code>u8</code></td><td>VRAM の内容に基づいて自機と地形との衝突判定を行うかどうか (0:false, 1:true)<br>レース中は true</td></tr>
+<tr><td><code>$4A</code></td><td><code>u8</code></td><td></td></tr>
+<tr><td><code>$4B</code></td><td><code>u8</code></td><td>NMI スレッドに対するパレット転送要求フラグ (0:false, 非0:true)</td></tr>
+<tr><td><code>$4C</code></td><td><code>u8</code></td><td></td></tr>
+<tr><td><code>$4D</code></td><td><code>u8</code></td><td>NMI ハンドラ終了フラグ (0:false, 非0:true)<br>NMI 待ち用。NMI ハンドラ終了時にインクリメントされる</td></tr>
+<tr><td><code>$4E</code></td><td></td><td>(write-only)</td></tr>
+<tr><td><code>$4F</code></td><td></td><td></td></tr>
+<tr><td><code>$50</code></td><td></td><td></td></tr>
+<tr><td><code>$51</code></td><td><code>u8</code></td><td>現在の ROUND 内 SS (0-based)</td></tr>
+<tr><td><code>$52</code></td><td><code>u8</code></td><td>現在の ROUND (0-based)</td></tr>
+<tr><td><code>$53</code></td><td><code>u8</code></td><td>CHAMPIONSHIP モードにおける難易度 (0:EASY, 1:NORMAL, 2:HARD)<br>ゲーム内ではそれぞれ &quot;GROUP N&quot;, &quot;GROUP A&quot;, &quot;GROUP S&quot; と表記される</td></tr>
+<tr><td><code>$54-$55</code></td><td><code>i8[2]</code></td><td>自機の速度x/yの符号 (0:0, 1:正, -1:負)<br>自機座標x/y中位の変化を反映する</td></tr>
+<tr><td><code>$56-$57</code></td><td><code>u8[2]</code></td><td>自機の座標x/y下位 (px)。x, y成分ともに mod 8</td></tr>
+<tr><td><code>$58-$59</code></td><td><code>u8[2]</code></td><td>自機の座標x/y中位。x成分は mod 32, y成分は mod 16<br>他用途への使い回しあり</td></tr>
+<tr><td><code>$5A-$5B</code></td><td><code>u8[2]</code></td><td>自機の座標x/y上位。x成分は mod 16, y成分は mod 64<br>他用途への使い回しあり</td></tr>
+<tr><td><code>$5C-$5D</code></td><td><code>i8[2]</code></td><td>現フレームにおける自機の変位x/y (px)<br>他用途への使い回しあり</td></tr>
+<tr><td><code>$5E-$76</code></td><td></td><td></td></tr>
+<tr><td><code>$77</code></td><td><code>u16be</code></td><td>自機のスピード</td></tr>
+<tr><td><code>$79</code></td><td><code>u8</code></td><td></td></tr>
+<tr><td><code>$7A</code></td><td><code>u8</code></td><td></td></tr>
+<tr><td><code>$7B</code></td><td><code>i16le</code></td><td>自機のエンジン温度<br>上位バイトが <code>0x80..=0xEF</code> のときオーバーヒートする</td></tr>
+<tr><td><code>$7D</code></td><td><code>u8</code></td><td>自機のオーバーヒートタイマー</td></tr>
+<tr><td><code>$7E-$7F</code></td><td><code>u8[2]</code></td><td></td></tr>
+<tr><td><code>$80</code></td><td></td><td>(未使用)</td></tr>
+<tr><td><code>$81</code></td><td><code>u8</code></td><td>自機の車体が向いている角度 (<code>0..=0xFF</code>)。0 が真上で、時計回り</td></tr>
+<tr><td><code>$82</code></td><td><code>u8</code></td><td>自機の移動角度 (<code>0..=0xFF</code>)。0 が真上で、時計回り</td></tr>
+<tr><td><code>$83</code></td><td><code>u8</code></td><td>自機の現フレームにおける移動距離</td></tr>
+<tr><td><code>$84</code></td><td><code>u8</code></td><td>現在の自機のスピード上位の上限</td></tr>
+<tr><td><code>$85</code></td><td><code>u8</code></td><td>自機の操作不能タイマー<br>毎フレームデクリメントされる。非0である間操作不能</td></tr>
+<tr><td><code>$86</code></td><td><code>u8</code></td><td></td></tr>
+<tr><td><code>$87</code></td><td></td><td>(未使用)</td></tr>
+<tr><td><code>$88</code></td><td><code>u8</code></td><td><a href="https://taotao54321.github.io/ExcitingRallyResource/ram/#hero-status">自機の状態</a></td></tr>
+<tr><td><code>$89</code></td><td><code>u8</code></td><td></td></tr>
+<tr><td><code>$8A</code></td><td><code>u8</code></td><td></td></tr>
+<tr><td><code>$8B</code></td><td><code>u8</code></td><td>自機の外観が壊れかけかどうか (0:false, 4:true)<br>ダメージ 192 以上で true になる</td></tr>
+<tr><td><code>$8C</code></td><td><code>u8</code></td><td>自機のダメージ<br>240 に達した状態でさらにダメージを受けるとクラッシュ</td></tr>
+<tr><td><code>$8D</code></td><td><code>u8</code></td><td><a href="https://taotao54321.github.io/ExcitingRallyResource/ram/#race-status">レースの状態</a></td></tr>
+<tr><td><code>$8E-$92</code></td><td></td><td></td></tr>
+<tr><td><code>$93</code></td><td></td><td>雑用</td></tr>
+<tr><td><code>$94-$95</code></td><td></td><td>(write-only)</td></tr>
+<tr><td><code>$96</code></td><td></td><td>未使用</td></tr>
+<tr><td><code>$97</code></td><td><code>u8</code></td><td></td></tr>
+<tr><td><code>$98</code></td><td><code>u8</code></td><td></td></tr>
+<tr><td><code>$99</code></td><td><code>u8</code></td><td>最終ラップ通知タイマー</td></tr>
+<tr><td><code>$9A</code></td><td><code>u8</code></td><td>自機の DRIVE (0:2WD, 1:4WD)</td></tr>
+<tr><td><code>$9B</code></td><td><code>u8</code></td><td>自機の INTAKE (0:NORMAL, 1:TURBO)</td></tr>
+<tr><td><code>$9C</code></td><td><code>u8</code></td><td><a href="https://taotao54321.github.io/ExcitingRallyResource/ram/#hero-tire">自機の TIRE</a></td></tr>
+<tr><td><code>$9D</code></td><td><code>u8</code></td><td></td></tr>
+<tr><td><code>$9E</code></td><td><code>u8</code></td><td>自機の加速力 (最大 54)。値はセッティング依存<br>加速条件を満たしているフレームで <code>18 + (加速力)</code> が自機スピードに加算される</td></tr>
+<tr><td><code>$9F</code></td><td><code>u8</code></td><td>現在の SS における路面状況 (<code>0..=14</code>)。値が小さい方が状況が良い<br><code>0..=4</code> は TARMAC, <code>5..=9</code> は GRAVEL, <code>10..=14</code> は SNOW として扱われる<br>特に 14 は凍結路面を表す (ROUND 2 でのみ発生しうる)</td></tr>
+<tr><td><code>$A0</code></td><td><code>u8</code></td><td>現在の SS における障害物の発生頻度 (<code>0..=13</code>)</td></tr>
+<tr><td><code>$A1-$A2</code></td><td><code>u8[2]</code></td><td>現在の SS における昨日/今日の<a href="https://taotao54321.github.io/ExcitingRallyResource/ram/#weather">天候</a></td></tr>
+<tr><td><code>$A3-$A4</code></td><td><code>u8[2]</code></td><td>現在の SS における昨日/今日の気温 (<code>i16</code>, 摂氏 0.1 度単位) 下位</td></tr>
+<tr><td><code>$A5-$A6</code></td><td><code>u8[2]</code></td><td>現在の SS における昨日/今日の気温 (<code>i16</code>, 摂氏 0.1 度単位) 上位</td></tr>
+<tr><td><code>$A7</code></td><td><code>u8</code></td><td>ゲームモード (0:CHAMPIONSHIP, 1:BATTLE-TRIAL, 2:BATTLE-RALLY)</td></tr>
+<tr><td><code>$A8-$A9</code></td><td></td><td></td></tr>
+<tr><td><code>$AA</code></td><td><code>u8</code></td><td>現在の SS における残り周回数</td></tr>
+<tr><td><code>$AB</code></td><td><code>u8</code></td><td><a href="https://taotao54321.github.io/ExcitingRallyResource/ram/#lap-progress">周回の進捗状況</a></td></tr>
+<tr><td><code>$AC-$AF</code></td><td><code>u8[4]</code></td><td><a href="https://taotao54321.github.io/ExcitingRallyResource/ram/#current-time">現在計測中のタイム</a></td></tr>
+<tr><td><code>$B0-$B1</code></td><td></td><td>雑用</td></tr>
+<tr><td><code>$B2</code></td><td><code>u8</code></td><td></td></tr>
+<tr><td><code>$B3</code></td><td><code>u8</code></td><td>コーナー予告スプライト表示タイマー</td></tr>
+<tr><td><code>$B4-$B7</code></td><td><code>u8[4]</code></td><td>衝突判定用 VRAM アドレス配列 上位</td></tr>
+<tr><td><code>$B8-$BB</code></td><td><code>u8[4]</code></td><td>衝突判定用 VRAM アドレス配列 下位</td></tr>
+<tr><td><code>$BC-$BF</code></td><td><code>u8[4]</code></td><td>衝突判定用に VRAM から取得したタイル値を格納するバッファ</td></tr>
+<tr><td><code>$C0-$C7</code></td><td><code>u8[8]</code></td><td>乱数生成器の内部状態</td></tr>
+<tr><td><code>$C8</code></td><td><code>u8</code></td><td></td></tr>
+<tr><td><code>$C9-$FF</code></td><td></td><td></td></tr>
+<tr><td><code>$0100-$016F</code></td><td></td><td></td></tr>
+<tr><td><code>$0170</code></td><td><code>u8</code></td><td>SP マークスプライトを表示中かどうか (0:false, 1:true)</td></tr>
+<tr><td><code>$0171-$0174</code></td><td></td><td></td></tr>
+<tr><td><code>$0175</code></td><td><code>u8</code></td><td><a href="https://taotao54321.github.io/ExcitingRallyResource/ram/#lap-reverse-progress">逆走周回の進捗状況</a></td></tr>
+<tr><td><code>$0176</code></td><td><code>u8</code></td><td>逆走による FOUL フラグ (0:false, 1:true)</td></tr>
+<tr><td><code>$0177-$01FF</code></td><td><code>u8[137]</code></td><td>スタック領域</td></tr>
+<tr><td><code>$0200-$02FF</code></td><td><code>Sprite[64]</code></td><td>スプライトバッファ</td></tr>
+<tr><td><code>$0300-$04D9</code></td><td></td><td></td></tr>
+<tr><td><code>$04DA</code></td><td><code>u8</code></td><td>スタート時にホイールスピンが発生した際のホイールスピンタイマー初期値</td></tr>
+<tr><td><code>$04DB</code></td><td><code>u8</code></td><td>スタート時にホイールスピンが発生しうるかどうか (0:false, 非0:true)</td></tr>
+<tr><td><code>$04DC</code></td><td><code>u8</code></td><td>スタート時にホイールスピンが発生した際のホイールスピンタイマー</td></tr>
+<tr><td><code>$04DD</code></td><td><code>u8</code></td><td>スタート時にホイールスピンが発生したかどうか (0:false, 1:true)</td></tr>
+<tr><td><code>$04DE</code></td><td><code>u8</code></td><td>自機と地形との衝突判定を無効化するデバッグ用フラグ (0:false, 1:true)。通常は常に false</td></tr>
+<tr><td><code>$04DF-$05CE</code></td><td></td><td></td></tr>
+<tr><td><code>$05CF</code></td><td><code>u8</code></td><td>自機のスピード上位の上限の基本値。路面状況およびセッティングに依存<br>最終的な上限 (<code>$84</code>) はオーバーヒートなどを考慮して決まる</td></tr>
+<tr><td><code>$05D0</code></td><td><code>u8</code></td><td></td></tr>
+<tr><td><code>$05D1</code></td><td><code>u8</code></td><td></td></tr>
+<tr><td><code>$05D2-$05D5</code></td><td></td><td></td></tr>
+<tr><td><code>$05D6-$05DA</code></td><td><code>u8[5]</code></td><td>現在のゲームに参加しているプレイヤーインデックスの配列 (存在しない場合 0xFF)</td></tr>
+<tr><td><code>$05DB-$0602</code></td><td><code>u8[4][10]</code></td><td></td></tr>
+<tr><td><code>$0603-$062A</code></td><td><code>u8[4][10]</code></td><td></td></tr>
+<tr><td><code>$062B-$063E</code></td><td><code>u16be[10]</code></td><td>各選手の合計ポイント</td></tr>
+<tr><td><code>$063F-$0652</code></td><td></td><td>(未使用)</td></tr>
+<tr><td><code>$0653-$065C</code></td><td><code>u8[10]</code></td><td></td></tr>
+<tr><td><code>$065D-$06FA</code></td><td></td><td></td></tr>
+<tr><td><code>$06FB-$06FE</code></td><td><code>code</code></td><td><span class="todo">TODO</span> オーディオドライバ用</td></tr>
+<tr><td><code>$06FF</code></td><td></td><td>(未使用)</td></tr>
+<tr><td><code>$0700-$0703</code></td><td><code>u8[4]</code></td><td>ソフトリセット判定用 magic 文字列 &quot;RIE &quot;</td></tr>
+<tr><td><code>$0704</code></td><td><code>u8</code></td><td></td></tr>
+<tr><td><code>$0705</code></td><td><code>u8</code></td><td></td></tr>
+<tr><td><code>$0706</code></td><td><code>u8[8]</code></td><td>現在のプレイヤー名</td></tr>
+<tr><td><code>$070E-$074D</code></td><td><code>u8[8][8]</code></td><td>登録されているプレイヤー名の配列</td></tr>
+<tr><td><code>$074E-$07D4</code></td><td><code>u8[3][45]</code></td><td>ベストタイム配列</td></tr>
+<tr><td><code>$07D5-$07F4</code></td><td><code>u8[0x20]</code></td><td>現在のパレット (要求に応じて PPU へそのまま転送される)</td></tr>
+<tr><td><code>$07F5-$07FF</code></td><td></td><td>(未使用)</td></tr>
+</tbody></table>
+<h2 id="xiang-xi">詳細</h2>
+<h3 id="hero-status">自機の状態</h3>
+<table><thead><tr><th>bit</th><th>意味</th></tr></thead><tbody>
+<tr><td>0-1</td><td><span class="todo">TODO</span> ジャンプ状態? (ジャンプ開始時に 1, 着地時に 3 になる?)</td></tr>
+<tr><td>2</td><td>スリップ中 (水溜まりなどによる)</td></tr>
+<tr><td>3</td><td>クラッシュした敵車と接触中</td></tr>
+<tr><td>4</td><td>バックギア</td></tr>
+<tr><td>5</td><td>壁と接触中</td></tr>
+<tr><td>6</td><td>アンダーステア状態 (タイヤのグリップ力不足による)</td></tr>
+<tr><td>7</td><td>ドリフト中</td></tr>
+</tbody></table>
+<h3 id="race-status">レースの状態</h3>
+<table><thead><tr><th>bit</th><th>意味</th></tr></thead><tbody>
+<tr><td>0</td><td>タイム計測中 (ポーズ中は 0 になる)</td></tr>
+<tr><td>1-5</td><td>(未使用)</td></tr>
+<tr><td>6</td><td>最終ラップ突入中</td></tr>
+<tr><td>7</td><td>ゴール中 (自機のスピード上位が 0 になるまで実際にはゴールしない)</td></tr>
+</tbody></table>
+<h3 id="hero-tire">自機の TIRE</h3>
+<table><thead><tr><th>値</th><th>意味</th></tr></thead><tbody>
+<tr><td><code>0..=4</code></td><td>TARMAC (0:SLICK, 1:TM-1, 2:TM-2, 3:TM-3, 4:TM-4)</td></tr>
+<tr><td><code>5..=9</code></td><td>GRAVEL (5:GV-1, 6:GV-2, 7:GV-3, 8:GV-4, 9:GV-5)</td></tr>
+<tr><td><code>10..=14</code></td><td>SNOW (10:SN-1, 11:SN-2, 12:SN-3, 13:SN-4, 14:STUD)</td></tr>
+</tbody></table>
+<h3 id="weather">天候</h3>
+<table><thead><tr><th>値</th><th>意味</th></tr></thead><tbody>
+<tr><td>0</td><td>FAIR</td></tr>
+<tr><td>1</td><td>CLOUDY</td></tr>
+<tr><td>2</td><td>LIGHT RAIN / LIGHT SNOW</td></tr>
+<tr><td>3</td><td>RAIN / SNOW</td></tr>
+<tr><td>4</td><td>HEAVY RAIN / HEAVY SNOW</td></tr>
+</tbody></table>
+<p>雨/雪については、気温が負なら雪、非負なら雨となる。</p>
+<h3 id="lap-progress">周回の進捗状況</h3>
+<table><thead><tr><th>bit</th><th>意味</th></tr></thead><tbody>
+<tr><td>0-5</td><td>(未使用)</td></tr>
+<tr><td>6</td><td>第2チェックポイント通過済 (ゴール地点の直前)</td></tr>
+<tr><td>7</td><td>第1チェックポイント通過済 (スタート地点の直後)</td></tr>
+</tbody></table>
+<h3 id="current-time">現在計測中のタイム</h3>
+<table><thead><tr><th>offset</th><th>型</th><th>内容</th></tr></thead><tbody>
+<tr><td>0</td><td><code>u8</code></td><td>分 (packed BCD) (タイムが無効なとき 0xFF)</td></tr>
+<tr><td>1</td><td><code>u8</code></td><td>秒 (packed BCD)</td></tr>
+<tr><td>2</td><td><code>u8</code></td><td>1/100 秒 (packed BCD)</td></tr>
+<tr><td>3</td><td><code>u8</code></td><td>1/10000 秒</td></tr>
+</tbody></table>
+<h3 id="lap-reverse-progress">逆走周回の進捗状況</h3>
+<table><thead><tr><th>bit</th><th>意味</th></tr></thead><tbody>
+<tr><td>0-5</td><td>(未使用)</td></tr>
+<tr><td>6</td><td>逆走の第2チェックポイント通過 (スタート地点の直後)</td></tr>
+<tr><td>7</td><td>逆走の第1チェックポイント通過 (ゴール地点の直前)</td></tr>
+</tbody></table>
+</body>
+</html>
