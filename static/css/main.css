@@ -18,6 +18,11 @@ h1, h2, h3 {
     background-color: #CCCCCC;
 }
 
+.has-tooltip {
+    text-decoration: underline dotted;
+    cursor: help;
+}
+
 .summary {
     background-color: #FFFFA0;
 }
